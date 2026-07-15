@@ -54,7 +54,7 @@ export function Modals({ activeModal, selectedAsset, onClose, onNavigateEdit, sh
                 <div className="delete-asset-meta">
                   <span className="delete-asset-tag">ID: {selectedAsset.id}</span>
                   <span className="delete-asset-tag">S/N: {selectedAsset.serialNumber}</span>
-                  <span className="delete-asset-tag">{formatIDR(selectedAsset.price)}</span>
+                  <span className="delete-asset-tag">Stok: {selectedAsset.quantity || 1} unit</span>
                 </div>
               </div>
             )}
@@ -106,9 +106,9 @@ export function Modals({ activeModal, selectedAsset, onClose, onNavigateEdit, sh
                       </div>
                     </div>
                     <div className="detail-cell">
-                      <div className="detail-cell-label">Valuasi</div>
+                      <div className="detail-cell-label">Stok Tersedia</div>
                       <div className="detail-cell-value" style={{ fontFamily: 'var(--font-mono)' }}>
-                        {formatIDR(selectedAsset.price)}
+                        {selectedAsset.quantity !== undefined ? `${selectedAsset.quantity} unit` : '1 unit'}
                       </div>
                     </div>
                   </div>

@@ -8,14 +8,17 @@ export function AssetFormPage({ onNavigate, editAsset, showToast }) {
   const [formData, setFormData] = useState({
     id: '',
     category: 'Laptop & PC',
+    brand: '',
     name: '',
     serialNumber: '',
     status: 'Active',
+    quantity: 1,
     assignedTo: '',
     location: '',
     purchaseDate: new Date().toISOString().split('T')[0],
     price: '',
-    specs: ''
+    specs: '',
+    gambar_url: ''
   });
 
   useEffect(() => {
@@ -23,14 +26,17 @@ export function AssetFormPage({ onNavigate, editAsset, showToast }) {
       setFormData({
         id: editAsset.id || '',
         category: editAsset.category || 'Laptop & PC',
+        brand: editAsset.brand || '',
         name: editAsset.name || '',
         serialNumber: editAsset.serialNumber || '',
         status: editAsset.status || 'Active',
+        quantity: editAsset.quantity !== undefined ? editAsset.quantity : 1,
         assignedTo: editAsset.assignedTo || '',
         location: editAsset.location || '',
         purchaseDate: editAsset.purchaseDate || new Date().toISOString().split('T')[0],
         price: editAsset.price || '',
-        specs: editAsset.specs || ''
+        specs: editAsset.specs || '',
+        gambar_url: editAsset.gambar_url || ''
       });
     }
   }, [editAsset, isEditing]);
@@ -50,11 +56,14 @@ export function AssetFormPage({ onNavigate, editAsset, showToast }) {
     const assetData = {
       ...formData,
       id: formData.id.trim(),
+      brand: formData.brand.trim() || 'Enterprise',
       name: formData.name.trim(),
       serialNumber: formData.serialNumber.trim(),
+      quantity: Number(formData.quantity) || 1,
       assignedTo: formData.assignedTo.trim(),
       location: formData.location.trim(),
       specs: formData.specs.trim(),
+      gambar_url: formData.gambar_url.trim(),
       price: Number(formData.price) || 0
     };
 
@@ -156,6 +165,38 @@ export function AssetFormPage({ onNavigate, editAsset, showToast }) {
                   </div>
 
                   <div className="form-group">
+                    <label className="form-label" htmlFor="form-brand">
+                      Brand / Merek
+                    </label>
+                    <input
+                      type="text"
+                      id="form-brand"
+                      name="brand"
+                      className="form-input"
+                      placeholder="Contoh: Lenovo, Cisco, Apple"
+                      value={formData.brand}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="form-quantity">
+                      Stok Awal (Unit) <span className="required">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      id="form-quantity"
+                      name="quantity"
+                      className="form-input"
+                      min="1"
+                      placeholder="Contoh: 5"
+                      value={formData.quantity}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+
+                  <div className="form-group">
                     <label className="form-label" htmlFor="form-serial">
                       Serial Number <span className="required">*</span>
                     </label>
@@ -236,11 +277,11 @@ export function AssetFormPage({ onNavigate, editAsset, showToast }) {
 
             {/* Section: Finansial & Teknis */}
             <div className="form-section">
-              <div className="form-section-title">Finansial & Spesifikasi</div>
-              <div className="form-section-desc">Data pengadaan dan spesifikasi teknis perangkat.</div>
+              <div className="form-section-title">Pengadaan & Spesifikasi Teknis</div>
+              <div className="form-section-desc">Data pengadaan dan spesifikasi detail perangkat.</div>
               <div className="card card-padded">
                 <div className="form-grid">
-                  <div className="form-group">
+                  <div className="form-group full-width">
                     <label className="form-label" htmlFor="form-date">
                       Tanggal Pengadaan <span className="required">*</span>
                     </label>
@@ -250,24 +291,6 @@ export function AssetFormPage({ onNavigate, editAsset, showToast }) {
                       name="purchaseDate"
                       className="form-input"
                       value={formData.purchaseDate}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label" htmlFor="form-price">
-                      Valuasi Pengadaan (IDR) <span className="required">*</span>
-                    </label>
-                    <input
-                      type="number"
-                      id="form-price"
-                      name="price"
-                      className="form-input"
-                      placeholder="25000000"
-                      min="0"
-                      step="50000"
-                      value={formData.price}
                       onChange={handleInputChange}
                       required
                     />
