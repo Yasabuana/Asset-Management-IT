@@ -21,6 +21,8 @@ export function HistoryLogPage({ onNavigate, showToast }) {
     if (type === 'UPDATE') return 'update';
     if (type === 'STATUS_CHANGE') return 'status-change';
     if (type === 'DELETE') return 'delete';
+    if (type === 'CHECKOUT') return 'status-change';
+    if (type === 'RETURN') return 'create';
     return 'system';
   };
 
@@ -33,7 +35,7 @@ export function HistoryLogPage({ onNavigate, showToast }) {
             <span className="page-breadcrumb-sep">/</span>
             History Log
           </div>
-          <h1 className="page-title">Riwayat Aktivitas</h1>
+          <h1 className="page-title">Riwayat Aktivitas & Mutasi Stok (INVENTORY_HISTORY)</h1>
         </div>
         <div className="page-header-actions">
           {logs.length > 0 && (
@@ -48,14 +50,21 @@ export function HistoryLogPage({ onNavigate, showToast }) {
         <div className="card">
           {/* Filter Bar */}
           <div className="log-filters">
-            {['ALL', 'CREATE', 'UPDATE', 'DELETE'].map((type) => (
+            {[
+              { id: 'ALL', label: 'Semua' },
+              { id: 'CHECKOUT', label: 'Peminjaman/Out' },
+              { id: 'RETURN', label: 'Pengembalian/In' },
+              { id: 'CREATE', label: 'Tambah' },
+              { id: 'UPDATE', label: 'Update' },
+              { id: 'DELETE', label: 'Hapus' }
+            ].map((tab) => (
               <button
-                key={type}
-                className={`log-filter-btn ${logFilter === type ? 'active' : ''}`}
-                onClick={() => setLogFilter(type)}
+                key={tab.id}
+                className={`log-filter-btn ${logFilter === tab.id ? 'active' : ''}`}
+                onClick={() => setLogFilter(tab.id)}
                 type="button"
               >
-                {type === 'ALL' ? 'Semua' : type === 'CREATE' ? 'Tambah' : type === 'UPDATE' ? 'Update' : 'Hapus'}
+                {tab.label}
               </button>
             ))}
           </div>
@@ -65,18 +74,34 @@ export function HistoryLogPage({ onNavigate, showToast }) {
             {filteredLogs.length === 0 ? (
               <div className="empty-state">
                 <div className="empty-state-title">Belum ada riwayat aktivitas</div>
-                <div className="empty-state-desc">Setiap operasi Tambah, Update, atau Hapus aset akan tercatat di sini secara otomatis.</div>
+                <div className="empty-state-desc">Setiap operasi Tambah, Update, Peminjaman, atau Hapus aset akan tercatat di sini secara otomatis.</div>
               </div>
             ) : (
               filteredLogs.map((log) => (
                 <div className="log-item" key={log.id}>
                   <div className={`log-type-dot ${getDotClass(log.actionType)}`}></div>
                   <div className="log-content">
-                    <div className="log-header">
-                      <span>[{log.assetId}]</span> {log.actionType}
+                    <div className="log-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <span>[{log.assetId || log.asset_id}]</span> {log.actionType}
+                      </div>
+                      {log.jumlah_perubahan !== undefined && log.jumlah_perubahan !== 0 && (
+                        <span className="cell-mono" style={{
+                          fontSize: '12px',
+                          padding: '2px 8px',
+                          borderRadius: '4px',
+                          background: log.jumlah_perubahan < 0 ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)',
+                          color: log.jumlah_perubahan < 0 ? 'var(--color-danger)' : 'var(--color-success)',
+                          fontWeight: 600
+                        }}>
+                          Mutasi: {log.jumlah_perubahan > 0 ? `+${log.jumlah_perubahan}` : log.jumlah_perubahan} unit
+                        </span>
+                      )}
                     </div>
-                    <div className="log-description">{log.description}</div>
-                    <div className="log-time">{log.timestamp}</div>
+                    <div className="log-description">{log.description || log.alasan}</div>
+                    <div className="log-time">
+                      {log.timestamp} {log.admin_id && `— oleh Admin ID: ${log.admin_id}`}
+                    </div>
                   </div>
                 </div>
               ))

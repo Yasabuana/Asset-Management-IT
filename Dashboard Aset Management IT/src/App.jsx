@@ -4,12 +4,15 @@ import { DashboardPage } from './components/DashboardPage.jsx';
 import { AssetListPage } from './components/AssetListPage.jsx';
 import { AssetFormPage } from './components/AssetFormPage.jsx';
 import { HistoryLogPage } from './components/HistoryLogPage.jsx';
+import { AssetCheckoutPage } from './components/AssetCheckoutPage.jsx';
+import { TransactionsPage } from './components/TransactionsPage.jsx';
 import { Modals } from './components/Modals.jsx';
 
 export function App() {
   // Routing state
   const [currentPage, setCurrentPage] = useState('dashboard');
   const [editAsset, setEditAsset] = useState(null);
+  const [borrowAsset, setBorrowAsset] = useState(null);
 
   // Modal state (only delete + detail)
   const [activeModal, setActiveModal] = useState(null);
@@ -29,9 +32,15 @@ export function App() {
   const handleNavigate = (page, asset) => {
     if (page === 'edit' && asset) {
       setEditAsset(asset);
+      setBorrowAsset(null);
       setCurrentPage('edit');
+    } else if (page === 'checkout' && asset) {
+      setBorrowAsset(asset);
+      setEditAsset(null);
+      setCurrentPage('checkout');
     } else {
       setEditAsset(null);
+      setBorrowAsset(null);
       setCurrentPage(page);
     }
     window.scrollTo(0, 0);
@@ -75,6 +84,10 @@ export function App() {
         return <AssetFormPage onNavigate={handleNavigate} showToast={showToast} />;
       case 'edit':
         return <AssetFormPage onNavigate={handleNavigate} editAsset={editAsset} showToast={showToast} />;
+      case 'checkout':
+        return <AssetCheckoutPage onNavigate={handleNavigate} borrowAsset={borrowAsset} showToast={showToast} />;
+      case 'transactions':
+        return <TransactionsPage onNavigate={handleNavigate} showToast={showToast} />;
       case 'history':
         return <HistoryLogPage onNavigate={handleNavigate} showToast={showToast} />;
       default:

@@ -10,6 +10,8 @@ export function useAssetStore() {
     assets: [...store.assetsState],
     filteredAssets: store.getFilteredAssets(),
     logs: [...store.logsState],
+    users: [...store.usersState],
+    transactions: [...store.transactionsState],
     filters: { ...store.filterState }
   }));
 
@@ -19,6 +21,8 @@ export function useAssetStore() {
         assets: [...store.assetsState],
         filteredAssets: store.getFilteredAssets(),
         logs: [...store.logsState],
+        users: [...store.usersState],
+        transactions: [...store.transactionsState],
         filters: { ...store.filterState }
       });
     });
@@ -32,6 +36,8 @@ export function useAssetStore() {
     assets: stateSnapshot.assets,
     filteredAssets: stateSnapshot.filteredAssets,
     logs: stateSnapshot.logs,
+    users: stateSnapshot.users,
+    transactions: stateSnapshot.transactions,
     filters: stateSnapshot.filters,
     store,
     formatIDR

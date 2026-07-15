@@ -7,7 +7,7 @@ export function DashboardPage({ onNavigate, showToast }) {
   const totalAssets = assets.length;
   const activeCount = assets.filter(a => a.status === 'Active').length;
   const maintenanceCount = assets.filter(a => a.status === 'Maintenance').length;
-  const totalValue = assets.reduce((sum, a) => sum + (Number(a.price) || 0), 0);
+  const totalUnits = assets.reduce((sum, a) => sum + (a.quantity !== undefined ? a.quantity : 1), 0);
 
   const recentLogs = logs.slice(0, 5);
 
@@ -31,7 +31,7 @@ export function DashboardPage({ onNavigate, showToast }) {
         {/* Statistics Cards */}
         <div className="stats-grid" style={{ marginBottom: 'var(--space-6)' }}>
           <div className="stat-card">
-            <div className="stat-card-label">Total Inventaris</div>
+            <div className="stat-card-label">Total Jenis Aset</div>
             <div className="stat-card-value">{totalAssets}</div>
             <div className="stat-card-sub">Perangkat IT terdaftar</div>
             <div className="stat-card-accent" style={{ backgroundColor: 'var(--color-primary)' }}></div>
@@ -49,9 +49,9 @@ export function DashboardPage({ onNavigate, showToast }) {
             <div className="stat-card-accent" style={{ backgroundColor: 'var(--color-warning)' }}></div>
           </div>
           <div className="stat-card">
-            <div className="stat-card-label">Total Valuasi</div>
-            <div className="stat-card-value" style={{ fontSize: '1.5rem' }}>{formatIDR(totalValue)}</div>
-            <div className="stat-card-sub">Nilai aset keseluruhan</div>
+            <div className="stat-card-label">Total Unit Aset</div>
+            <div className="stat-card-value">{totalUnits}</div>
+            <div className="stat-card-sub">Keseluruhan stok fisik</div>
             <div className="stat-card-accent" style={{ backgroundColor: 'var(--color-text-primary)' }}></div>
           </div>
         </div>
