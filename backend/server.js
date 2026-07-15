@@ -124,13 +124,65 @@ app.post('/api/inventory_history', async (req, res) => {
          } = req.body;
 
         const newInventory_history = await pool.query(
-            'INSERT INTO assets (id, asset_id, tipe_transaksi, jumlah_perubahan, alasan, admin_id, created_at} = req.body;) VALUES ($1, $2, $3, $4, $5, $6, $7, $7) RETURNING *',
-            [ id, asset_id, tipe_transaksi, jumlah_perubahan, alasan, admin_id, created_at]
+            'INSERT INTO inventory_history (id, asset_id, tipe_transaksi, jumlah_perubahan, alasan, admin_id, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+            [ id, asset_id, tipe_transaksi, jumlah_perubahan, alasan, admin_id, created_at ]
         );
 
         res.json(newInventory_history.rows[0]);
     } catch (err) {
         console.error("Error POST inventory_history",err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// Endpoint PUT assets
+app.put('/api/assets/:id', async (req, res) => {
+    try {
+        const { id } = req.params; 
+        
+        const { nama, serial_number, brand, kategori, kondisi, quantity, lokasi, keterangan, gambar_url } = req.body;
+
+        const updateAsset = await pool.query(
+            `UPDATE assets 
+             SET nama = $1, serial_number = $2, brand = $3, kategori = $4, kondisi = $5, quantity = $6, lokasi = $7, keterangan = $8, gambar_url = $9 
+             WHERE id = $10 
+             RETURNING *`,
+            [nama, serial_number, brand, kategori, kondisi, quantity, lokasi, keterangan, gambar_url, id]
+        );
+
+        if (updateAsset.rows.length === 0) {
+            return res.status(404).json({ message: "Aset tidak ditemukan!" });
+        }
+
+        res.json(updateAsset.rows[0]);
+    } catch (err) {
+        console.error("Error PUT assets:", err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// Endpoint PUT users
+app.put('/api//:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        const { id, nama, role } = req.body;
+
+        const updateUsers = await pool.query(
+            `UPDATE users 
+             SET nama = $1, role = $2
+             WHERE id = $3
+             RETURNING *`,
+            [nama, role, id]
+        );
+
+        if (updateUsers.rows.length === 0) {
+            return res.status(404).json({ message: "User tidak ditemukan!" });
+        }
+
+        res.json(updateUsers.rows[0]);
+    } catch (err) {
+        console.error("Error PUT users:", err.message);
         res.status(500).send('Server Error');
     }
 });
