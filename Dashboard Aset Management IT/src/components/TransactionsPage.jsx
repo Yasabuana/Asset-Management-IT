@@ -9,9 +9,9 @@ export function TransactionsPage({ onNavigate, showToast }) {
     ? transactions
     : transactions.filter(t => t.tipe_request === filterType);
 
-  const handleReturnItem = (tx) => {
+  const handleReturnItem = async (tx) => {
     if (window.confirm(`Apakah Anda yakin ingin mengembalikan ${tx.jumlah} unit [${tx.asset_id}] ke stok gudang?`)) {
-      const result = store.processReturn(tx.id);
+      const result = await store.processReturn(tx.id);
       if (result.success) {
         showToast(`Transaksi ${tx.id} selesai. Stok barang telah dikembalikan.`, 'success');
       } else {
@@ -114,7 +114,7 @@ export function TransactionsPage({ onNavigate, showToast }) {
                       <tr key={tx.id}>
                         <td><span className="cell-code">{tx.id}</span></td>
                         <td>
-                          <div className="cell-name-primary">{assetObj ? assetObj.name : `Aset [${tx.asset_id}]`}</div>
+                          <div className="cell-name-primary">{assetObj ? assetObj.nama : `Aset [${tx.asset_id}]`}</div>
                           <div className="cell-name-secondary">ID: {tx.asset_id}</div>
                         </td>
                         <td>

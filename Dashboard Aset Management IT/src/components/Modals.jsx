@@ -10,10 +10,10 @@ const SVG_CLOSE = (
 export function Modals({ activeModal, selectedAsset, onClose, onNavigateEdit, showToast }) {
   const { store, formatIDR } = useAssetStore();
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (selectedAsset) {
-      const deletedName = selectedAsset.name;
-      const success = store.deleteAssetById(selectedAsset.id);
+      const deletedName = selectedAsset.nama;
+      const success = await store.deleteAssetById(selectedAsset.id);
       if (success) {
         onClose();
         showToast(`Aset "${deletedName}" berhasil dihapus dari inventaris.`, 'success');
@@ -50,10 +50,10 @@ export function Modals({ activeModal, selectedAsset, onClose, onNavigateEdit, sh
 
             {selectedAsset && (
               <div className="delete-asset-preview">
-                <div className="delete-asset-name">{selectedAsset.name}</div>
+                <div className="delete-asset-name">{selectedAsset.nama}</div>
                 <div className="delete-asset-meta">
                   <span className="delete-asset-tag">ID: {selectedAsset.id}</span>
-                  <span className="delete-asset-tag">S/N: {selectedAsset.serialNumber}</span>
+                  <span className="delete-asset-tag">S/N: {selectedAsset.serial_number}</span>
                   <span className="delete-asset-tag">Stok: {selectedAsset.quantity || 1} unit</span>
                 </div>
               </div>
@@ -79,8 +79,8 @@ export function Modals({ activeModal, selectedAsset, onClose, onNavigateEdit, sh
         <div className="modal-card" style={{ maxWidth: '560px' }}>
           <div className="modal-header">
             <div>
-              <div className="modal-title">{selectedAsset?.name || 'Detail Aset'}</div>
-              <div className="modal-subtitle">{selectedAsset?.id} — {selectedAsset?.category}</div>
+              <div className="modal-title">{selectedAsset?.nama || 'Detail Aset'}</div>
+              <div className="modal-subtitle">{selectedAsset?.id} — {selectedAsset?.kategori}</div>
             </div>
             <button type="button" className="modal-close-btn" onClick={onClose}>{SVG_CLOSE}</button>
           </div>
@@ -88,20 +88,20 @@ export function Modals({ activeModal, selectedAsset, onClose, onNavigateEdit, sh
           <div className="modal-body">
             {selectedAsset && (() => {
               const statusClass =
-                selectedAsset.status === 'Active' ? 'status-active' :
-                selectedAsset.status === 'Maintenance' ? 'status-maintenance' :
-                selectedAsset.status === 'In Storage' ? 'status-storage' :
+                selectedAsset.kondisi === 'Baik' ? 'status-active' :
+                selectedAsset.kondisi === 'Perbaikan Rutin' ? 'status-maintenance' :
+                selectedAsset.kondisi === 'Dipinjam' ? 'status-storage' :
                 'status-retired';
 
               return (
                 <>
                   <div className="detail-grid">
                     <div className="detail-cell">
-                      <div className="detail-cell-label">Status</div>
+                      <div className="detail-cell-label">Kondisi</div>
                       <div className="detail-cell-value">
                         <span className={`status-badge ${statusClass}`} style={{ cursor: 'default' }}>
                           <span className="status-dot"></span>
-                          {selectedAsset.status}
+                          {selectedAsset.kondisi}
                         </span>
                       </div>
                     </div>
@@ -116,25 +116,21 @@ export function Modals({ activeModal, selectedAsset, onClose, onNavigateEdit, sh
                   <div className="detail-rows">
                     <div className="detail-row">
                       <span className="detail-row-label">Serial Number</span>
-                      <span className="detail-row-value" style={{ fontFamily: 'var(--font-mono)' }}>{selectedAsset.serialNumber}</span>
+                      <span className="detail-row-value" style={{ fontFamily: 'var(--font-mono)' }}>{selectedAsset.serial_number}</span>
                     </div>
                     <div className="detail-row">
-                      <span className="detail-row-label">Pengguna</span>
-                      <span className="detail-row-value">{selectedAsset.assignedTo}</span>
+                      <span className="detail-row-label">Brand</span>
+                      <span className="detail-row-value">{selectedAsset.brand}</span>
                     </div>
                     <div className="detail-row">
                       <span className="detail-row-label">Lokasi</span>
-                      <span className="detail-row-value">{selectedAsset.location}</span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-row-label">Tanggal Pengadaan</span>
-                      <span className="detail-row-value">{selectedAsset.purchaseDate}</span>
+                      <span className="detail-row-value">{selectedAsset.lokasi}</span>
                     </div>
                   </div>
 
                   <div className="detail-specs">
-                    <span className="detail-specs-label">Spesifikasi Teknis</span>
-                    {selectedAsset.specs}
+                    <span className="detail-specs-label">Keterangan / Spesifikasi</span>
+                    {selectedAsset.keterangan}
                   </div>
                 </>
               );

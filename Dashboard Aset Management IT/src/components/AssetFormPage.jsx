@@ -7,17 +7,14 @@ export function AssetFormPage({ onNavigate, editAsset, showToast }) {
 
   const [formData, setFormData] = useState({
     id: '',
-    category: 'Laptop & PC',
+    kategori: 'Laptop & PC',
     brand: '',
-    name: '',
-    serialNumber: '',
-    status: 'Active',
+    nama: '',
+    serial_number: '',
+    kondisi: 'Baik',
     quantity: 1,
-    assignedTo: '',
-    location: '',
-    purchaseDate: new Date().toISOString().split('T')[0],
-    price: '',
-    specs: '',
+    lokasi: '',
+    keterangan: '',
     gambar_url: ''
   });
 
@@ -25,17 +22,14 @@ export function AssetFormPage({ onNavigate, editAsset, showToast }) {
     if (isEditing && editAsset) {
       setFormData({
         id: editAsset.id || '',
-        category: editAsset.category || 'Laptop & PC',
+        kategori: editAsset.kategori || 'Laptop & PC',
         brand: editAsset.brand || '',
-        name: editAsset.name || '',
-        serialNumber: editAsset.serialNumber || '',
-        status: editAsset.status || 'Active',
+        nama: editAsset.nama || '',
+        serial_number: editAsset.serial_number || '',
+        kondisi: editAsset.kondisi || 'Baik',
         quantity: editAsset.quantity !== undefined ? editAsset.quantity : 1,
-        assignedTo: editAsset.assignedTo || '',
-        location: editAsset.location || '',
-        purchaseDate: editAsset.purchaseDate || new Date().toISOString().split('T')[0],
-        price: editAsset.price || '',
-        specs: editAsset.specs || '',
+        lokasi: editAsset.lokasi || '',
+        keterangan: editAsset.keterangan || '',
         gambar_url: editAsset.gambar_url || ''
       });
     }
@@ -46,9 +40,9 @@ export function AssetFormPage({ onNavigate, editAsset, showToast }) {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.name.trim() || !formData.serialNumber.trim() || !formData.assignedTo.trim() || !formData.location.trim() || !formData.specs.trim()) {
+    if (!formData.nama.trim() || !formData.serial_number.trim() || !formData.lokasi.trim()) {
       showToast('Mohon lengkapi seluruh kolom yang wajib diisi.', 'warning');
       return;
     }
@@ -57,22 +51,20 @@ export function AssetFormPage({ onNavigate, editAsset, showToast }) {
       ...formData,
       id: formData.id.trim(),
       brand: formData.brand.trim() || 'Enterprise',
-      name: formData.name.trim(),
-      serialNumber: formData.serialNumber.trim(),
+      nama: formData.nama.trim(),
+      serial_number: formData.serial_number.trim(),
       quantity: Number(formData.quantity) || 1,
-      assignedTo: formData.assignedTo.trim(),
-      location: formData.location.trim(),
-      specs: formData.specs.trim(),
-      gambar_url: formData.gambar_url.trim(),
-      price: Number(formData.price) || 0
+      lokasi: formData.lokasi.trim(),
+      keterangan: formData.keterangan.trim(),
+      gambar_url: formData.gambar_url.trim()
     };
 
-    const result = store.createOrUpdateAsset(assetData, isEditing);
+    const result = await store.createOrUpdateAsset(assetData, isEditing);
     if (result.success) {
       if (result.action === 'CREATE') {
-        showToast(`Aset baru "${result.asset.name}" (${result.asset.id}) berhasil disimpan.`, 'success');
+        showToast(`Aset baru "${result.asset.nama}" (${result.asset.id}) berhasil disimpan.`, 'success');
       } else {
-        showToast(`Perubahan pada "${result.asset.name}" (${result.asset.id}) berhasil disimpan.`, 'success');
+        showToast(`Perubahan pada "${result.asset.nama}" (${result.asset.id}) berhasil disimpan.`, 'success');
       }
       onNavigate('list');
     } else {
@@ -135,9 +127,9 @@ export function AssetFormPage({ onNavigate, editAsset, showToast }) {
                     </label>
                     <select
                       id="form-category"
-                      name="category"
+                      name="kategori"
                       className="form-select"
-                      value={formData.category}
+                      value={formData.kategori}
                       onChange={handleInputChange}
                       required
                     >
@@ -155,10 +147,10 @@ export function AssetFormPage({ onNavigate, editAsset, showToast }) {
                     <input
                       type="text"
                       id="form-name"
-                      name="name"
+                      name="nama"
                       className="form-input"
                       placeholder="Contoh: Lenovo ThinkPad X1 Carbon Gen 11"
-                      value={formData.name}
+                      value={formData.nama}
                       onChange={handleInputChange}
                       required
                     />
@@ -203,10 +195,10 @@ export function AssetFormPage({ onNavigate, editAsset, showToast }) {
                     <input
                       type="text"
                       id="form-serial"
-                      name="serialNumber"
+                      name="serial_number"
                       className="form-input"
                       placeholder="Contoh: 5CD41088KL"
-                      value={formData.serialNumber}
+                      value={formData.serial_number}
                       onChange={handleInputChange}
                       required
                     />
@@ -214,20 +206,20 @@ export function AssetFormPage({ onNavigate, editAsset, showToast }) {
 
                   <div className="form-group">
                     <label className="form-label" htmlFor="form-status">
-                      Status <span className="required">*</span>
+                      Kondisi <span className="required">*</span>
                     </label>
                     <select
                       id="form-status"
-                      name="status"
+                      name="kondisi"
                       className="form-select"
-                      value={formData.status}
+                      value={formData.kondisi}
                       onChange={handleInputChange}
                       required
                     >
-                      <option value="Active">Active</option>
-                      <option value="Maintenance">Maintenance</option>
-                      <option value="In Storage">In Storage</option>
-                      <option value="Retired">Retired</option>
+                      <option value="Baik">Baik</option>
+                      <option value="Perbaikan Rutin">Perbaikan Rutin</option>
+                      <option value="Dipinjam">Dipinjam</option>
+                      <option value="Non-aktif">Non-aktif</option>
                     </select>
                   </div>
                 </div>
@@ -240,33 +232,18 @@ export function AssetFormPage({ onNavigate, editAsset, showToast }) {
               <div className="form-section-desc">Informasi siapa yang menggunakan dan di mana aset ditempatkan.</div>
               <div className="card card-padded">
                 <div className="form-grid">
-                  <div className="form-group">
-                    <label className="form-label" htmlFor="form-assigned">
-                      Pengguna / Assigned To <span className="required">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      id="form-assigned"
-                      name="assignedTo"
-                      className="form-input"
-                      placeholder="Contoh: Budi Santoso - Lead DevOps"
-                      value={formData.assignedTo}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
 
-                  <div className="form-group">
+                  <div className="form-group full-width">
                     <label className="form-label" htmlFor="form-location">
                       Lokasi Penempatan <span className="required">*</span>
                     </label>
                     <input
                       type="text"
                       id="form-location"
-                      name="location"
+                      name="lokasi"
                       className="form-input"
                       placeholder="Contoh: HQ Level 4 - Tech Bay 12"
-                      value={formData.location}
+                      value={formData.lokasi}
                       onChange={handleInputChange}
                       required
                     />
@@ -281,32 +258,18 @@ export function AssetFormPage({ onNavigate, editAsset, showToast }) {
               <div className="form-section-desc">Data pengadaan dan spesifikasi detail perangkat.</div>
               <div className="card card-padded">
                 <div className="form-grid">
-                  <div className="form-group full-width">
-                    <label className="form-label" htmlFor="form-date">
-                      Tanggal Pengadaan <span className="required">*</span>
-                    </label>
-                    <input
-                      type="date"
-                      id="form-date"
-                      name="purchaseDate"
-                      className="form-input"
-                      value={formData.purchaseDate}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
 
                   <div className="form-group full-width">
                     <label className="form-label" htmlFor="form-specs">
-                      Spesifikasi Teknis <span className="required">*</span>
+                      Keterangan / Spesifikasi <span className="required">*</span>
                     </label>
                     <textarea
                       id="form-specs"
-                      name="specs"
+                      name="keterangan"
                       className="form-textarea"
                       rows="3"
                       placeholder="Contoh: Intel Core i7-1360P, 32GB DDR5, 1TB NVMe SSD"
-                      value={formData.specs}
+                      value={formData.keterangan}
                       onChange={handleInputChange}
                       required
                     ></textarea>

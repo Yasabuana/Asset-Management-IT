@@ -14,8 +14,8 @@ export function AssetCheckoutPage({ onNavigate, borrowAsset, showToast }) {
     keterangan: ''
   });
 
-  // Available assets for checkout (must not be Retired)
-  const availableAssets = assets.filter(a => a.status !== 'Retired' && (a.quantity === undefined || a.quantity > 0));
+  // Available assets for checkout (must not be Non-aktif)
+  const availableAssets = assets.filter(a => a.kondisi !== 'Non-aktif' && (a.quantity === undefined || a.quantity > 0));
 
   useEffect(() => {
     if (borrowAsset) {
@@ -50,7 +50,7 @@ export function AssetCheckoutPage({ onNavigate, borrowAsset, showToast }) {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.asset_id) {
       showToast('Mohon pilih aset yang akan dipinjam/diambil.', 'warning');
@@ -65,7 +65,7 @@ export function AssetCheckoutPage({ onNavigate, borrowAsset, showToast }) {
       return;
     }
 
-    const result = store.submitTransaction(formData);
+    const result = await store.submitTransaction(formData);
     if (result.success) {
       showToast(`Transaksi ${formData.tipe_request} berhasil diajukan dan diproses (ID: ${result.transaction.id}).`, 'success');
       onNavigate('transactions');
@@ -111,7 +111,7 @@ export function AssetCheckoutPage({ onNavigate, borrowAsset, showToast }) {
                       <option value="">-- Pilih Perangkat IT --</option>
                       {availableAssets.map(a => (
                         <option key={a.id} value={a.id}>
-                          [{a.id}] {a.name} — (Sisa Stok: {a.quantity || 1} unit)
+                          [{a.id}] {a.nama} — (Sisa Stok: {a.quantity || 1} unit)
                         </option>
                       ))}
                     </select>

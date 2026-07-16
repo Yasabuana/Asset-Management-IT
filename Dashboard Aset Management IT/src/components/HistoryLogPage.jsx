@@ -7,11 +7,11 @@ export function HistoryLogPage({ onNavigate, showToast }) {
 
   const filteredLogs = logFilter === 'ALL'
     ? logs
-    : logs.filter(l => l.actionType === logFilter);
+    : logs.filter(l => l.tipe_transaksi === logFilter);
 
-  const handleClearLogs = () => {
+  const handleClearLogs = async () => {
     if (window.confirm('Apakah Anda yakin ingin menghapus seluruh riwayat log?')) {
-      store.clearLogs();
+      await store.clearLogs();
       showToast('Seluruh riwayat log berhasil dibersihkan.', 'warning');
     }
   };
@@ -79,11 +79,11 @@ export function HistoryLogPage({ onNavigate, showToast }) {
             ) : (
               filteredLogs.map((log) => (
                 <div className="log-item" key={log.id}>
-                  <div className={`log-type-dot ${getDotClass(log.actionType)}`}></div>
+                  <div className={`log-type-dot ${getDotClass(log.tipe_transaksi)}`}></div>
                   <div className="log-content">
                     <div className="log-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div>
-                        <span>[{log.assetId || log.asset_id}]</span> {log.actionType}
+                        <span>[{log.asset_id}]</span> {log.tipe_transaksi}
                       </div>
                       {log.jumlah_perubahan !== undefined && log.jumlah_perubahan !== 0 && (
                         <span className="cell-mono" style={{
@@ -100,7 +100,7 @@ export function HistoryLogPage({ onNavigate, showToast }) {
                     </div>
                     <div className="log-description">{log.description || log.alasan}</div>
                     <div className="log-time">
-                      {log.timestamp} {log.admin_id && `— oleh Admin ID: ${log.admin_id}`}
+                      {log.created_at} {log.admin_id && `— oleh Admin ID: ${log.admin_id}`}
                     </div>
                   </div>
                 </div>

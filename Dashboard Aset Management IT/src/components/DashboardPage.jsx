@@ -5,8 +5,8 @@ export function DashboardPage({ onNavigate, showToast }) {
   const { assets, logs, formatIDR } = useAssetStore();
 
   const totalAssets = assets.length;
-  const activeCount = assets.filter(a => a.status === 'Active').length;
-  const maintenanceCount = assets.filter(a => a.status === 'Maintenance').length;
+  const activeCount = assets.filter(a => a.kondisi === 'Baik').length;
+  const maintenanceCount = assets.filter(a => a.kondisi === 'Perbaikan Rutin').length;
   const totalUnits = assets.reduce((sum, a) => sum + (a.quantity !== undefined ? a.quantity : 1), 0);
 
   const recentLogs = logs.slice(0, 5);

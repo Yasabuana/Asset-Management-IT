@@ -29,19 +29,19 @@ export function AssetListPage({ onNavigate, onOpenDetail, onOpenDelete, showToas
     store.setFilters({ searchQuery: '', category: 'ALL', status: 'ALL', location: 'ALL', sortBy: 'id_asc' });
   };
 
-  const handleQuickStatusToggle = (asset) => {
-    const statuses = ['Active', 'Maintenance', 'In Storage', 'Retired'];
-    const nextIdx = (statuses.indexOf(asset.status) + 1) % statuses.length;
+  const handleQuickStatusToggle = async (asset) => {
+    const statuses = ['Baik', 'Perbaikan Rutin', 'Dipinjam', 'Non-aktif'];
+    const nextIdx = (statuses.indexOf(asset.kondisi) + 1) % statuses.length;
     const nextStatus = statuses[nextIdx];
-    store.toggleAssetStatus(asset.id, nextStatus);
+    await store.toggleAssetStatus(asset.id, nextStatus);
     showToast(`Status diubah menjadi "${nextStatus}" untuk ${asset.id}`, 'success');
   };
 
   const getStatusClass = (status) => {
-    if (status === 'Active') return 'status-active';
-    if (status === 'Maintenance') return 'status-maintenance';
-    if (status === 'In Storage') return 'status-storage';
-    if (status === 'Retired') return 'status-retired';
+    if (status === 'Baik') return 'status-active';
+    if (status === 'Perbaikan Rutin') return 'status-maintenance';
+    if (status === 'Dipinjam') return 'status-storage';
+    if (status === 'Non-aktif') return 'status-retired';
     return '';
   };
 
@@ -77,11 +77,11 @@ export function AssetListPage({ onNavigate, onOpenDetail, onOpenDelete, showToas
                 onChange={handleSearchChange}
               />
               <select className="filter-select" value={filters.status || 'ALL'} onChange={handleStatusFilter}>
-                <option value="ALL">Semua Status</option>
-                <option value="Active">Active</option>
-                <option value="Maintenance">Maintenance</option>
-                <option value="In Storage">In Storage</option>
-                <option value="Retired">Retired</option>
+                <option value="ALL">Semua Kondisi</option>
+                <option value="Baik">Baik</option>
+                <option value="Perbaikan Rutin">Perbaikan Rutin</option>
+                <option value="Dipinjam">Dipinjam</option>
+                <option value="Non-aktif">Non-aktif</option>
               </select>
               <select className="filter-select" value={filters.category || 'ALL'} onChange={handleCategoryFilter}>
                 <option value="ALL">Semua Kategori</option>
@@ -96,8 +96,7 @@ export function AssetListPage({ onNavigate, onOpenDetail, onOpenDelete, showToas
                 <option value="id_asc">ID (A-Z)</option>
                 <option value="id_desc">ID (Z-A)</option>
                 <option value="name_asc">Nama (A-Z)</option>
-                <option value="date_desc">Terbaru</option>
-                <option value="price_desc">Nilai Tertinggi</option>
+                <option value="name_desc">Nama (Z-A)</option>
               </select>
               <button className="btn btn-sm btn-secondary" onClick={handleResetFilters}>Reset</button>
             </div>
@@ -112,8 +111,7 @@ export function AssetListPage({ onNavigate, onOpenDetail, onOpenDelete, showToas
                   <th>Nama Perangkat</th>
                   <th>Kategori</th>
                   <th>Stok</th>
-                  <th>Status</th>
-                  <th>Pengguna</th>
+                  <th>Kondisi</th>
                   <th>Lokasi</th>
                   <th style={{ textAlign: 'center', width: '130px' }}>Aksi</th>
                 </tr>
@@ -121,7 +119,7 @@ export function AssetListPage({ onNavigate, onOpenDetail, onOpenDelete, showToas
               <tbody>
                 {filteredAssets.length === 0 ? (
                   <tr>
-                    <td colSpan={8}>
+                    <td colSpan={7}>
                       <div className="empty-state">
                         <div className="empty-state-title">Tidak ada data ditemukan</div>
                         <div className="empty-state-desc">Coba ubah kata kunci pencarian atau reset filter.</div>
@@ -134,23 +132,22 @@ export function AssetListPage({ onNavigate, onOpenDetail, onOpenDelete, showToas
                     <tr key={asset.id}>
                       <td><span className="cell-code">{asset.id}</span></td>
                       <td>
-                        <div className="cell-name-primary">{asset.name}</div>
-                        <div className="cell-name-secondary">S/N: {asset.serialNumber} | Brand: {asset.brand || 'Enterprise'}</div>
+                        <div className="cell-name-primary">{asset.nama}</div>
+                        <div className="cell-name-secondary">S/N: {asset.serial_number} | Brand: {asset.brand || '-'}</div>
                       </td>
-                      <td><span className="category-badge">{asset.category}</span></td>
+                      <td><span className="category-badge">{asset.kategori}</span></td>
                       <td>
                         <span className="cell-mono" style={{ fontWeight: 600, color: asset.quantity === 0 ? 'var(--color-danger)' : 'var(--color-primary)' }}>
                           {asset.quantity !== undefined ? `${asset.quantity} unit` : '1 unit'}
                         </span>
                       </td>
                       <td>
-                        <div className={`status-badge ${getStatusClass(asset.status)}`} onClick={() => handleQuickStatusToggle(asset)} title="Klik untuk ubah status">
+                        <div className={`status-badge ${getStatusClass(asset.kondisi)}`} onClick={() => handleQuickStatusToggle(asset)} title="Klik untuk ubah kondisi">
                           <span className="status-dot"></span>
-                          {asset.status}
+                          {asset.kondisi}
                         </div>
                       </td>
-                      <td>{asset.assignedTo}</td>
-                      <td style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)' }}>{asset.location}</td>
+                      <td style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)' }}>{asset.lokasi}</td>
                       <td>
                         <div className="row-actions" style={{ justifyContent: 'center' }}>
                           <button className="row-action-btn" title="Pinjam / Ambil Aset Ini" onClick={() => onNavigate('checkout', asset)} style={{ color: 'var(--color-primary)' }}>{SVG_CHECKOUT}</button>
