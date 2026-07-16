@@ -49,7 +49,6 @@ export function AssetFormPage({ onNavigate, editAsset, showToast }) {
 
     const assetData = {
       ...formData,
-      id: formData.id.trim(),
       brand: formData.brand.trim() || 'Enterprise',
       nama: formData.nama.trim(),
       serial_number: formData.serial_number.trim(),
@@ -95,31 +94,31 @@ export function AssetFormPage({ onNavigate, editAsset, showToast }) {
 
       <div className="page-body">
         <div className="form-container">
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} autoComplete="off">
             {/* Section: Identitas */}
             <div className="form-section">
               <div className="form-section-title">Identitas Perangkat</div>
               <div className="form-section-desc">Informasi dasar untuk identifikasi aset di dalam inventaris.</div>
               <div className="card card-padded">
                 <div className="form-grid">
-                  <div className="form-group">
-                    <label className="form-label" htmlFor="form-id">
-                      Kode Aset / ID <span className="required">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      id="form-id"
-                      name="id"
-                      className="form-input"
-                      placeholder="Contoh: AST-LPT-105"
-                      value={formData.id}
-                      onChange={handleInputChange}
-                      disabled={isEditing}
-                    />
-                    <span className="form-hint">
-                      {isEditing ? 'Kode aset tidak dapat diubah.' : 'Kosongkan untuk ID otomatis.'}
-                    </span>
-                  </div>
+                  {isEditing && (
+                    <div className="form-group">
+                      <label className="form-label" htmlFor="form-id">
+                        Kode Aset / ID
+                      </label>
+                      <input
+                        type="text"
+                        id="form-id"
+                        name="id"
+                        className="form-input"
+                        value={formData.id}
+                        disabled={true}
+                      />
+                      <span className="form-hint">
+                        Kode aset otomatis dari sistem (tidak dapat diubah).
+                      </span>
+                    </div>
+                  )}
 
                   <div className="form-group">
                     <label className="form-label" htmlFor="form-category">

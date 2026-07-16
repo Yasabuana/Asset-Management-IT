@@ -61,17 +61,13 @@ app.get('/api/inventory_history', async (req, res) => {
     }
 });
 
-// Endpoint POST assets
 app.post('/api/assets', async (req, res) => {
     try {
-        const { id, nama, serial_number, brand, kategori, kondisi, quantity, lokasi,
-            keterangan, gambar_url, created_at
-         } = req.body;
+        const { nama, serial_number, brand, kategori, kondisi, quantity, lokasi, keterangan, gambar_url } = req.body;
 
         const newAsset = await pool.query(
-            'INSERT INTO assets ( id, nama, serial_number, brand, kategori, kondisi, quantity, lokasi, keterangan, gambar_url, created_at ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *',
-            [ id, nama, serial_number, brand, kategori, kondisi, quantity, lokasi,
-            keterangan, gambar_url, created_at]
+            'INSERT INTO assets ( nama, serial_number, brand, kategori, kondisi, quantity, lokasi, keterangan, gambar_url ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
+            [ nama, serial_number, brand, kategori, kondisi, quantity, lokasi, keterangan, gambar_url ]
         );
 
         res.json(newAsset.rows[0]);
@@ -80,15 +76,13 @@ app.post('/api/assets', async (req, res) => {
         res.status(500).send('Server Error');
     }
 });
-// Endpoint POST users
 app.post('/api/users', async (req, res) => {
     try {
-        const { id, nama, role
-         } = req.body;
+        const { nama, role } = req.body;
 
         const newUser = await pool.query(
-            'INSERT INTO users ( id, nama, role ) VALUES ($1, $2, $3) RETURNING *',
-            [ id, nama, role]
+            'INSERT INTO users ( nama, role ) VALUES ($1, $2) RETURNING *',
+            [ nama, role ]
         );
 
         res.json(newUser.rows[0]);
@@ -98,17 +92,13 @@ app.post('/api/users', async (req, res) => {
     }
 });
 
-// Endpoint POST transactions
 app.post('/api/transactions', async (req, res) => {
     try {
-        const { id, asset_id, tipe_request, jumlah, status, 
-            tanggal_request, tanggal_approval, keterangan
-         } = req.body;
+        const { asset_id, user_id, tipe_request, jumlah, status, keterangan } = req.body;
 
         const newTransaction = await pool.query(
-            'INSERT INTO transactions (id, asset_id, tipe_request, jumlah, status,tanggal_request, tanggal_approval, keterangan) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
-            [ id, asset_id, tipe_request, jumlah, status, 
-            tanggal_request, tanggal_approval, keterangan]
+            'INSERT INTO transactions (asset_id, user_id, tipe_request, jumlah, status, keterangan) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+            [ asset_id, user_id, tipe_request, jumlah, status, keterangan ]
         );
 
         res.json(newTransaction.rows[0]);
@@ -117,15 +107,13 @@ app.post('/api/transactions', async (req, res) => {
         res.status(500).send('Server Error');
     }
 });
-// Endpoint POST inventory_history
 app.post('/api/inventory_history', async (req, res) => {
     try {
-        const { id, asset_id, tipe_transaksi, jumlah_perubahan, alasan, admin_id, created_at
-         } = req.body;
+        const { asset_id, tipe_transaksi, jumlah_perubahan, alasan, admin_id } = req.body;
 
         const newInventory_history = await pool.query(
-            'INSERT INTO inventory_history (id, asset_id, tipe_transaksi, jumlah_perubahan, alasan, admin_id, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-            [ id, asset_id, tipe_transaksi, jumlah_perubahan, alasan, admin_id, created_at ]
+            'INSERT INTO inventory_history (asset_id, tipe_transaksi, jumlah_perubahan, alasan, admin_id) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+            [ asset_id, tipe_transaksi, jumlah_perubahan, alasan, admin_id ]
         );
 
         res.json(newInventory_history.rows[0]);

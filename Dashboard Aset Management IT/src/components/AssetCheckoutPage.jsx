@@ -31,14 +31,14 @@ export function AssetCheckoutPage({ onNavigate, borrowAsset, showToast }) {
     }
   }, [borrowAsset, availableAssets]);
 
-  const selectedAssetObj = assets.find(a => a.id === formData.asset_id);
+  const selectedAssetObj = assets.find(a => String(a.id) === String(formData.asset_id));
   const maxStock = selectedAssetObj ? (selectedAssetObj.quantity || 1) : 1;
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => {
       if (name === 'asset_id') {
-        const targetAsset = assets.find(a => a.id === value);
+        const targetAsset = assets.find(a => String(a.id) === String(value));
         const newMax = targetAsset ? (targetAsset.quantity || 1) : 1;
         return {
           ...prev,
@@ -89,7 +89,7 @@ export function AssetCheckoutPage({ onNavigate, borrowAsset, showToast }) {
 
       <div className="page-body">
         <div className="form-container">
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} autoComplete="off">
             {/* Section 1: Pemilihan Perangkat */}
             <div className="form-section">
               <div className="form-section-title">Barang yang Diajukan</div>

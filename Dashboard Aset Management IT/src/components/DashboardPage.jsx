@@ -118,23 +118,24 @@ export function DashboardPage({ onNavigate, showToast }) {
             ) : (
               recentLogs.map((log) => {
                 let dotClass = 'system';
-                if (log.actionType === 'CREATE') dotClass = 'create';
-                else if (log.actionType === 'UPDATE' || log.actionType === 'STATUS_CHANGE') dotClass = 'update';
-                else if (log.actionType === 'DELETE') dotClass = 'delete';
+                if (log.tipe_transaksi === 'CREATE') dotClass = 'create';
+                else if (log.tipe_transaksi === 'UPDATE' || log.tipe_transaksi === 'STATUS_CHANGE' || log.tipe_transaksi === 'CHECKOUT') dotClass = 'update';
+                else if (log.tipe_transaksi === 'DELETE') dotClass = 'delete';
+                else if (log.tipe_transaksi === 'RETURN') dotClass = 'create';
 
                 return (
                   <div className="recent-item" key={log.id}>
                     <div className={`log-type-dot ${dotClass}`}></div>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: 'var(--text-sm)', fontWeight: 600 }}>
-                        <span style={{ color: 'var(--color-primary)', fontFamily: 'var(--font-mono)', fontSize: '12px' }}>[{log.assetId}]</span>{' '}
-                        {log.actionType}
+                        <span style={{ color: 'var(--color-primary)', fontFamily: 'var(--font-mono)', fontSize: '12px' }}>[{log.asset_id}]</span>{' '}
+                        {log.tipe_transaksi}
                       </div>
                       <div style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)' }}>
-                        {log.description}
+                        {log.alasan}
                       </div>
                       <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: '2px' }}>
-                        {log.timestamp}
+                        {new Date(log.created_at).toLocaleString('id-ID')}
                       </div>
                     </div>
                   </div>

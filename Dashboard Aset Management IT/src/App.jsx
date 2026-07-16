@@ -6,6 +6,7 @@ import { AssetFormPage } from './components/AssetFormPage.jsx';
 import { HistoryLogPage } from './components/HistoryLogPage.jsx';
 import { AssetCheckoutPage } from './components/AssetCheckoutPage.jsx';
 import { TransactionsPage } from './components/TransactionsPage.jsx';
+import { UsersPage } from './components/UsersPage.jsx';
 import { Modals } from './components/Modals.jsx';
 
 export function App() {
@@ -90,6 +91,8 @@ export function App() {
         return <TransactionsPage onNavigate={handleNavigate} showToast={showToast} />;
       case 'history':
         return <HistoryLogPage onNavigate={handleNavigate} showToast={showToast} />;
+      case 'users':
+        return <UsersPage onNavigate={handleNavigate} />;
       default:
         return <DashboardPage onNavigate={handleNavigate} showToast={showToast} />;
     }

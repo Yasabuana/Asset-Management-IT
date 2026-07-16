@@ -60,13 +60,11 @@ class Store {
   async addHistoryLog(actionType, assetDetails) {
     try {
       const newLog = {
-        id: 'LOG-' + Date.now(),
-        asset_id: assetDetails.id || 'N/A',
+        asset_id: actionType === 'DELETE' ? null : assetDetails.id,
         tipe_transaksi: actionType,
         jumlah_perubahan: assetDetails.jumlah_perubahan || 0,
-        alasan: assetDetails.alasan || actionType,
-        admin_id: assetDetails.admin_id || 99,
-        created_at: new Date().toISOString()
+        alasan: actionType === 'DELETE' ? `Penghapusan aset: ${assetDetails.nama || assetDetails.id}` : (assetDetails.alasan || actionType),
+        admin_id: assetDetails.admin_id || null
       };
 
       const res = await fetch(`${API_BASE_URL}/inventory_history`, {
@@ -85,7 +83,7 @@ class Store {
   }
 
   async submitTransaction(txData) {
-    const asset = this.assetsState.find(a => a.id === txData.asset_id);
+    const asset = this.assetsState.find(a => String(a.id) === String(txData.asset_id));
     if (!asset) return { success: false, message: 'Aset tidak ditemukan dalam database.' };
 
     const jumlah = Number(txData.jumlah) || 1;
@@ -103,14 +101,19 @@ class Store {
       if (existingUser) {
         userId = existingUser.id;
       } else {
-        userId = Date.now();
-        const newUser = { id: userId, nama: borrowerName, role: borrowerRole || 'Karyawan' };
+        const newUser = { nama: borrowerName, role: borrowerRole || 'Karyawan' };
         const userRes = await fetch(`${API_BASE_URL}/users`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(newUser)
         });
-        if (userRes.ok) this.usersState.push(await userRes.json());
+        if (userRes.ok) {
+           const savedUser = await userRes.json();
+           userId = savedUser.id;
+           this.usersState.push(savedUser);
+        } else {
+           userId = 99; // Fallback
+        }
       }
     }
 
@@ -123,14 +126,11 @@ class Store {
       String(now.getSeconds()).padStart(2, '0');
 
     const newTx = {
-      id: 'TRX-' + Date.now(),
       asset_id: txData.asset_id,
       user_id: userId,
       tipe_request: txData.tipe_request || 'Peminjaman Sementara',
       jumlah,
       status: txData.tipe_request === 'Peminjaman Sementara' ? 'Approved (Dipinjam)' : 'Completed',
-      tanggal_request: timestamp,
-      tanggal_approval: timestamp,
       keterangan: txData.keterangan || '-'
     };
 
@@ -158,7 +158,7 @@ class Store {
       
       if(updateRes.ok) {
         const updatedAsset = await updateRes.json();
-        const index = this.assetsState.findIndex(a => a.id === asset.id);
+        const index = this.assetsState.findIndex(a => String(a.id) === String(asset.id));
         this.assetsState[index] = updatedAsset;
       }
 
@@ -178,7 +178,7 @@ class Store {
   }
 
   async processReturn(transactionId, returnNotes) {
-    const tx = this.transactionsState.find(t => t.id === transactionId);
+    const tx = this.transactionsState.find(t => String(t.id) === String(transactionId));
     if (!tx) return { success: false, message: 'Transaksi tidak ditemukan.' };
     if (tx.status === 'Returned (Selesai)') return { success: false, message: 'Transaksi ini sudah selesai/dikembalikan.' };
 
@@ -191,7 +191,7 @@ class Store {
         body: JSON.stringify(tx)
       });
 
-      const asset = this.assetsState.find(a => a.id === tx.asset_id);
+      const asset = this.assetsState.find(a => String(a.id) === String(tx.asset_id));
       if (asset) {
         asset.quantity = (asset.quantity || 0) + tx.jumlah;
         if (asset.kondisi === 'Dipinjam' && asset.quantity > 0) {
@@ -229,7 +229,7 @@ class Store {
         if (!res.ok) throw new Error('Aset tidak ditemukan atau gagal update.');
         const updatedAsset = await res.json();
         
-        const index = this.assetsState.findIndex(a => a.id === assetData.id);
+        const index = this.assetsState.findIndex(a => String(a.id) === String(assetData.id));
         if (index !== -1) {
           this.assetsState[index] = updatedAsset;
           await this.addHistoryLog('UPDATE', updatedAsset);
@@ -237,15 +237,9 @@ class Store {
           return { success: true, action: 'UPDATE', asset: updatedAsset };
         }
       } else {
-        const newId = assetData.id && assetData.id.trim() !== '' 
-          ? assetData.id.trim() 
-          : `AST-${Math.floor(100 + Math.random() * 900)}`;
-        
-        if (this.assetsState.some(a => a.id.toLowerCase() === newId.toLowerCase())) {
-          return { success: false, message: `Kode Aset "${newId}" sudah ada dalam database!` };
-        }
-
-        const newAsset = { ...assetData, id: newId, created_at: new Date().toISOString() };
+        const newAsset = { ...assetData };
+        delete newAsset.id; // Let database auto-increment generating ID
+        delete newAsset.created_at; 
         const res = await fetch(`${API_BASE_URL}/assets`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -267,7 +261,7 @@ class Store {
 
   async deleteAssetById(id) {
     try {
-      const assetToDelete = this.assetsState.find(a => a.id === id);
+      const assetToDelete = this.assetsState.find(a => String(a.id) === String(id));
       if (!assetToDelete) return false;
 
       const res = await fetch(`${API_BASE_URL}/assets/${id}`, {
@@ -286,7 +280,7 @@ class Store {
   }
 
   async toggleAssetStatus(id, newStatus) {
-    const asset = this.assetsState.find(a => a.id === id);
+    const asset = this.assetsState.find(a => String(a.id) === String(id));
     if (asset && asset.kondisi !== newStatus) {
       asset.kondisi = newStatus;
       try {
@@ -338,8 +332,8 @@ class Store {
 
     result.sort((a, b) => {
       switch (this.filterState.sortBy) {
-        case 'id_asc': return (a.id || '').localeCompare(b.id || '');
-        case 'id_desc': return (b.id || '').localeCompare(a.id || '');
+        case 'id_asc': return (a.id || 0) - (b.id || 0);
+        case 'id_desc': return (b.id || 0) - (a.id || 0);
         case 'name_asc': return (a.nama || '').localeCompare(b.nama || '');
         case 'name_desc': return (b.nama || '').localeCompare(a.nama || '');
         default: return 0;
