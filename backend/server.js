@@ -162,13 +162,13 @@ app.put('/api/assets/:id', async (req, res) => {
 });
 
 // Endpoint PUT users
-app.put('/api//:id', async (req, res) => {
+app.put('/api/users/:id', async (req, res) => {
     try {
         const { id } = req.params;
         
-        const { id, nama, role } = req.body;
+        const { nama, role } = req.body;
 
-        const updateUsers = await pool.query(
+        const updateUser = await pool.query(
             `UPDATE users 
              SET nama = $1, role = $2
              WHERE id = $3
@@ -176,16 +176,158 @@ app.put('/api//:id', async (req, res) => {
             [nama, role, id]
         );
 
-        if (updateUsers.rows.length === 0) {
+        if (updateUser.rows.length === 0) {
             return res.status(404).json({ message: "User tidak ditemukan!" });
         }
 
-        res.json(updateUsers.rows[0]);
+        res.json(updateUser.rows[0]);
     } catch (err) {
         console.error("Error PUT users:", err.message);
         res.status(500).send('Server Error');
     }
 });
+
+// Endpoint PUT transactions
+app.put('/api/transactions/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        const { asset_id, tipe_request, jumlah, status, 
+            tanggal_request, tanggal_approval, keterangan } = req.body;
+
+        const updateTransaction = await pool.query(
+            `UPDATE transactions 
+             SET asset_id = $1, tipe_request = $2, jumlah = $3, status = $4, tanggal_request = $5,
+             tanggal_approval = $6, keterangan = $7
+             WHERE id = $8
+             RETURNING *`,
+            [ asset_id, tipe_request, jumlah, status, 
+            tanggal_request, tanggal_approval, keterangan, id]
+        );
+
+        if (updateTransaction.rows.length === 0) {
+            return res.status(404).json({ message: "Transaction tidak ditemukan!" });
+        }
+
+        res.json(updateTransaction.rows[0]);
+    } catch (err) {
+        console.error("Error PUT Transactions:", err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// Endpoint PUT inventory_history
+app.put('/api/inventory_history/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        const { asset_id, tipe_transaksi, jumlah_perubahan, alasan, 
+            admin_id, created_at } = req.body;
+
+        const updateInventoryHistory = await pool.query(
+            `UPDATE inventory_history
+             SET asset_id = $1, tipe_transaksi = $2, jumlah_perubahan = $3, alasan = $4, 
+             admin_id = $5, created_at = $6
+             WHERE id = $7
+             RETURNING *`,
+            [asset_id, tipe_transaksi, jumlah_perubahan, alasan, admin_id, created_at, id]
+        );
+
+        if (updateInventoryHistory.rows.length === 0) {
+            return res.status(404).json({ message: "Inventory History tidak ditemukan!" });
+        }
+
+        res.json(updateInventoryHistory.rows[0]);
+    } catch (err) {
+        console.error("Error PUT Inventory History:", err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// Endpoint DELETE assets
+app.delete('/api/assets/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const deleteAsset = await pool.query(
+            'DELETE FROM assets WHERE id = $1 RETURNING *', 
+            [id]
+        );
+
+        if (deleteAsset.rows.length === 0) {
+            return res.status(404).json({ message: "Aset tidak ditemukan!" });
+        }
+
+        res.json({ message: "Aset berhasil dihapus dari database!" });
+    } catch (err) {
+        console.error("Error DELETE assets:", err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// Endpoint DELETE users
+app.delete('/api/users/:id', async (req, res) => {
+    try {
+        const { id } = req.params; 
+
+        const deleteUser = await pool.query(
+            'DELETE FROM users WHERE id = $1 RETURNING *', 
+            [id]
+        );
+
+        if (deleteUser.rows.length === 0) {
+            return res.status(404).json({ message: "User tidak ditemukan!" });
+        }
+
+        res.json({ message: "User berhasil dihapus dari database!" });
+    } catch (err) {
+        console.error("Error DELETE users:", err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// Endpoint DELETE transactions
+app.delete('/api/transactions/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const deleteTransaction = await pool.query(
+            'DELETE FROM transactions WHERE id = $1 RETURNING *', 
+            [id]
+        );
+
+        if (deleteTransaction.rows.length === 0) {
+            return res.status(404).json({ message: "Transaction tidak ditemukan!" });
+        }
+
+        res.json({ message: "Transaction berhasil dihapus dari database!" });
+    } catch (err) {
+        console.error("Error DELETE transactions:", err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// Endpoint DELETE inventory_history
+app.delete('/api/inventory_history/:id', async (req, res) => {
+    try {
+        const { id } = req.params; 
+
+        const deleteInventoryHistory = await pool.query(
+            'DELETE FROM inventory_history WHERE id = $1 RETURNING *', 
+            [id]
+        );
+
+        if (deleteInventoryHistory.rows.length === 0) {
+            return res.status(404).json({ message: "Inventory History tidak ditemukan!" });
+        }
+
+        res.json({ message: "Inventory History berhasil dihapus dari database!" });
+    } catch (err) {
+        console.error("Error DELETE Inventory History:", err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
 
 
 const PORT = 5000;
