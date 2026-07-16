@@ -30,7 +30,7 @@ export function AssetListPage({ onNavigate, onOpenDetail, onOpenDelete, showToas
   };
 
   const handleQuickStatusToggle = async (asset) => {
-    const statuses = ['Baik', 'Perbaikan Rutin', 'Dipinjam', 'Non-aktif'];
+    const statuses = ['New', 'Used'];
     const nextIdx = (statuses.indexOf(asset.kondisi) + 1) % statuses.length;
     const nextStatus = statuses[nextIdx];
     await store.toggleAssetStatus(asset.id, nextStatus);
@@ -38,10 +38,8 @@ export function AssetListPage({ onNavigate, onOpenDetail, onOpenDelete, showToas
   };
 
   const getStatusClass = (status) => {
-    if (status === 'Baik') return 'status-active';
-    if (status === 'Perbaikan Rutin') return 'status-maintenance';
-    if (status === 'Dipinjam') return 'status-storage';
-    if (status === 'Non-aktif') return 'status-retired';
+    if (status === 'New') return 'status-active';
+    if (status === 'Used') return 'status-storage';
     return '';
   };
 
@@ -78,10 +76,8 @@ export function AssetListPage({ onNavigate, onOpenDetail, onOpenDelete, showToas
               />
               <select className="filter-select" value={filters.status || 'ALL'} onChange={handleStatusFilter}>
                 <option value="ALL">Semua Kondisi</option>
-                <option value="Baik">Baik</option>
-                <option value="Perbaikan Rutin">Perbaikan Rutin</option>
-                <option value="Dipinjam">Dipinjam</option>
-                <option value="Non-aktif">Non-aktif</option>
+                <option value="New">New</option>
+                <option value="Used">Used</option>
               </select>
               <select className="filter-select" value={filters.category || 'ALL'} onChange={handleCategoryFilter}>
                 <option value="ALL">Semua Kategori</option>

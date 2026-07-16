@@ -146,9 +146,7 @@ class Store {
       this.transactionsState.unshift(savedTx);
 
       asset.quantity = Math.max(0, (asset.quantity || 1) - jumlah);
-      if (txData.tipe_request === 'Peminjaman Sementara' && asset.quantity === 0) {
-        asset.kondisi = 'Dipinjam'; 
-      }
+      // Kondisi tidak diubah otomatis saat barang dipinjam
 
       const updateRes = await fetch(`${API_BASE_URL}/assets/${asset.id}`, {
         method: 'PUT',
@@ -194,9 +192,8 @@ class Store {
       const asset = this.assetsState.find(a => String(a.id) === String(tx.asset_id));
       if (asset) {
         asset.quantity = (asset.quantity || 0) + tx.jumlah;
-        if (asset.kondisi === 'Dipinjam' && asset.quantity > 0) {
-          asset.kondisi = 'Baik';
-        }
+        // Setelah dikembalikan, barang otomatis menjadi Used (Bekas)
+        asset.kondisi = 'Used';
         await fetch(`${API_BASE_URL}/assets/${asset.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },

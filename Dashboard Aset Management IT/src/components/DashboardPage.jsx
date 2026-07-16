@@ -5,8 +5,8 @@ export function DashboardPage({ onNavigate, showToast }) {
   const { assets, logs, formatIDR } = useAssetStore();
 
   const totalAssets = assets.length;
-  const activeCount = assets.filter(a => a.kondisi === 'Baik').length;
-  const maintenanceCount = assets.filter(a => a.kondisi === 'Perbaikan Rutin').length;
+  const activeCount = assets.filter(a => a.kondisi === 'New').length;
+  const maintenanceCount = assets.filter(a => a.kondisi === 'Used').length;
   const totalUnits = assets.reduce((sum, a) => sum + (a.quantity !== undefined ? a.quantity : 1), 0);
 
   const recentLogs = logs.slice(0, 5);
@@ -37,15 +37,15 @@ export function DashboardPage({ onNavigate, showToast }) {
             <div className="stat-card-accent" style={{ backgroundColor: 'var(--color-primary)' }}></div>
           </div>
           <div className="stat-card">
-            <div className="stat-card-label">Active</div>
+            <div className="stat-card-label">Kondisi Baru (New)</div>
             <div className="stat-card-value" style={{ color: 'var(--color-success)' }}>{activeCount}</div>
-            <div className="stat-card-sub">Sedang beroperasi</div>
+            <div className="stat-card-sub">Stok dengan kondisi baru</div>
             <div className="stat-card-accent" style={{ backgroundColor: 'var(--color-success)' }}></div>
           </div>
           <div className="stat-card">
-            <div className="stat-card-label">Maintenance</div>
+            <div className="stat-card-label">Bekas (Used)</div>
             <div className="stat-card-value" style={{ color: 'var(--color-warning)' }}>{maintenanceCount}</div>
-            <div className="stat-card-sub">Dalam perawatan</div>
+            <div className="stat-card-sub">Stok yang sudah pernah dipakai</div>
             <div className="stat-card-accent" style={{ backgroundColor: 'var(--color-warning)' }}></div>
           </div>
           <div className="stat-card">

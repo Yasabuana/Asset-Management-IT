@@ -88,10 +88,9 @@ export function Modals({ activeModal, selectedAsset, onClose, onNavigateEdit, sh
           <div className="modal-body">
             {selectedAsset && (() => {
               const statusClass =
-                selectedAsset.kondisi === 'Baik' ? 'status-active' :
-                selectedAsset.kondisi === 'Perbaikan Rutin' ? 'status-maintenance' :
-                selectedAsset.kondisi === 'Dipinjam' ? 'status-storage' :
-                'status-retired';
+                selectedAsset.kondisi === 'New' ? 'status-active' :
+                selectedAsset.kondisi === 'Used' ? 'status-storage' :
+                '';
 
               return (
                 <>

@@ -11,7 +11,7 @@ export function AssetFormPage({ onNavigate, editAsset, showToast }) {
     brand: '',
     nama: '',
     serial_number: '',
-    kondisi: 'Baik',
+    kondisi: 'New',
     quantity: 1,
     lokasi: '',
     keterangan: '',
@@ -26,7 +26,7 @@ export function AssetFormPage({ onNavigate, editAsset, showToast }) {
         brand: editAsset.brand || '',
         nama: editAsset.nama || '',
         serial_number: editAsset.serial_number || '',
-        kondisi: editAsset.kondisi || 'Baik',
+        kondisi: editAsset.kondisi || 'New',
         quantity: editAsset.quantity !== undefined ? editAsset.quantity : 1,
         lokasi: editAsset.lokasi || '',
         keterangan: editAsset.keterangan || '',
@@ -215,10 +215,8 @@ export function AssetFormPage({ onNavigate, editAsset, showToast }) {
                       onChange={handleInputChange}
                       required
                     >
-                      <option value="Baik">Baik</option>
-                      <option value="Perbaikan Rutin">Perbaikan Rutin</option>
-                      <option value="Dipinjam">Dipinjam</option>
-                      <option value="Non-aktif">Non-aktif</option>
+                      <option value="New">New</option>
+                      <option value="Used">Used</option>
                     </select>
                   </div>
                 </div>
