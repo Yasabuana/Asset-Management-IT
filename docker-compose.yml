@@ -14,5 +14,29 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  web:
+    build:
+      context: ./"Dashboard Aset Management IT"
+      dockerfile: Dockerfile
+    container_name: web_aset_it
+    restart: always
+    ports:
+      - "3005:3000"
+    depends_on:
+      - db
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend_aset_it
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      - DB_PASS=${DB_PASS}
+    depends_on:
+      - db
+
 volumes:
   pgdata:
