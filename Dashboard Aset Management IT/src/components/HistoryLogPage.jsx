@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAssetStore } from '../state/useAssetStore.js';
+import { exportToExcel } from '../utils/exportToExcel.js';
 
 export function HistoryLogPage({ onNavigate, showToast }) {
   const { logs, store } = useAssetStore();
@@ -35,13 +36,27 @@ export function HistoryLogPage({ onNavigate, showToast }) {
             <span className="page-breadcrumb-sep">/</span>
             History Log
           </div>
-          <h1 className="page-title">Riwayat Aktivitas & Mutasi Stok (INVENTORY_HISTORY)</h1>
+          <h1 className="page-title">Riwayat Aktivitas & Mutasi Stok</h1>
         </div>
         <div className="page-header-actions">
           {logs.length > 0 && (
-            <button className="btn btn-secondary" onClick={handleClearLogs}>
-              Hapus Semua Log
-            </button>
+            <>
+              <button className="btn btn-secondary" onClick={() => {
+                exportToExcel(filteredLogs, [
+                  { header: 'ID', key: 'id' },
+                  { header: 'Aset ID', key: 'asset_id' },
+                  { header: 'Tipe Transaksi', key: 'tipe_transaksi' },
+                  { header: 'Jumlah Perubahan', key: 'jumlah_perubahan' },
+                  { header: 'Alasan', key: 'alasan' },
+                  { header: 'Deskripsi', key: 'description' },
+                  { header: 'Admin ID', key: 'admin_id' },
+                  { header: 'Tanggal', key: 'created_at' },
+                ], `History_Log_${new Date().toISOString().slice(0, 10)}`);
+              }}>Export Excel</button>
+              <button className="btn btn-secondary" onClick={handleClearLogs}>
+                Hapus Semua Log
+              </button>
+            </>
           )}
         </div>
       </div>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAssetStore } from '../state/useAssetStore.js';
+import { exportToExcel } from '../utils/exportToExcel.js';
 
 export function TransactionsPage({ onNavigate, showToast }) {
   const { transactions, assets, users, store } = useAssetStore();
@@ -48,12 +49,37 @@ export function TransactionsPage({ onNavigate, showToast }) {
           </div>
           <h1 className="page-title">Monitoring Transaksi Peminjaman & Pengambilan</h1>
         </div>
-        <div className="page-header-actions">
-          <button className="btn btn-primary" onClick={() => onNavigate('checkout')}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Buat Transaksi Baru
-          </button>
-        </div>
+          <div className="page-header-actions">
+            <button className="btn btn-secondary" onClick={() => {
+              exportToExcel(filteredTransactions.map(tx => {
+                const assetObj = assets.find(a => a.id === tx.asset_id);
+                const userObj = users.find(u => u.id === tx.user_id);
+                return {
+                  ...tx,
+                  asset_nama: assetObj ? assetObj.nama : tx.asset_id,
+                  user_nama: tx.user_nama || (userObj ? userObj.nama : tx.user_id),
+                  user_role: tx.user_role || (userObj ? userObj.role : '-'),
+                };
+              }), [
+                { header: 'ID Transaksi', key: 'id' },
+                { header: 'ID Aset', key: 'asset_id' },
+                { header: 'Nama Aset', key: 'asset_nama' },
+                { header: 'ID Pengguna', key: 'user_id' },
+                { header: 'Nama Pengguna', key: 'user_nama' },
+                { header: 'Role Pengguna', key: 'user_role' },
+                { header: 'Tipe Request', key: 'tipe_request' },
+                { header: 'Jumlah', key: 'jumlah' },
+                { header: 'Status', key: 'status' },
+                { header: 'Tanggal Request', key: 'tanggal_request' },
+                { header: 'Tanggal Approval', key: 'tanggal_approval' },
+                { header: 'Keterangan', key: 'keterangan' },
+              ], `Data_Transaksi_${new Date().toISOString().slice(0, 10)}`);
+            }}>Export Excel</button>
+            <button className="btn btn-primary" onClick={() => onNavigate('checkout')}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Buat Transaksi Baru
+            </button>
+          </div>
       </div>
 
       <div className="page-body">
