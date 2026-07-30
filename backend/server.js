@@ -63,11 +63,11 @@ app.get('/api/inventory_history', async (req, res) => {
 
 app.post('/api/assets', async (req, res) => {
     try {
-        const { nama, serial_number, brand, kategori, kondisi, quantity, lokasi, keterangan, gambar_url } = req.body;
+        const { nama, serial_number, brand, kategori, kondisi, quantity, lokasi, keterangan, gambar_url, healthness } = req.body;
 
         const newAsset = await pool.query(
-            'INSERT INTO assets ( nama, serial_number, brand, kategori, kondisi, quantity, lokasi, keterangan, gambar_url ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
-            [ nama, serial_number, brand, kategori, kondisi, quantity, lokasi, keterangan, gambar_url ]
+            'INSERT INTO assets ( nama, serial_number, brand, kategori, kondisi, quantity, lokasi, keterangan, gambar_url, healthness ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *',
+            [ nama, serial_number, brand, kategori, kondisi, quantity, lokasi, keterangan, gambar_url, healthness || 'green' ]
         );
 
         res.json(newAsset.rows[0]);
@@ -128,14 +128,14 @@ app.put('/api/assets/:id', async (req, res) => {
     try {
         const { id } = req.params; 
         
-        const { nama, serial_number, brand, kategori, kondisi, quantity, lokasi, keterangan, gambar_url } = req.body;
+        const { nama, serial_number, brand, kategori, kondisi, quantity, lokasi, keterangan, gambar_url, healthness } = req.body;
 
         const updateAsset = await pool.query(
             `UPDATE assets 
-             SET nama = $1, serial_number = $2, brand = $3, kategori = $4, kondisi = $5, quantity = $6, lokasi = $7, keterangan = $8, gambar_url = $9 
-             WHERE id = $10 
+             SET nama = $1, serial_number = $2, brand = $3, kategori = $4, kondisi = $5, quantity = $6, lokasi = $7, keterangan = $8, gambar_url = $9, healthness = $10
+             WHERE id = $11 
              RETURNING *`,
-            [nama, serial_number, brand, kategori, kondisi, quantity, lokasi, keterangan, gambar_url, id]
+            [nama, serial_number, brand, kategori, kondisi, quantity, lokasi, keterangan, gambar_url, healthness, id]
         );
 
         if (updateAsset.rows.length === 0) {

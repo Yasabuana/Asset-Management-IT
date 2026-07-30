@@ -22,12 +22,37 @@ export function AssetListPage({ onNavigate, onOpenDetail, onOpenDelete, showToas
     store.setFilters({ category: e.target.value });
   };
 
+  const handleHealthnessFilter = (e) => {
+    store.setFilters({ healthness: e.target.value });
+  };
+
   const handleSortChange = (e) => {
     store.setFilters({ sortBy: e.target.value });
   };
 
   const handleResetFilters = () => {
-    store.setFilters({ searchQuery: '', category: 'ALL', status: 'ALL', location: 'ALL', sortBy: 'id_asc' });
+    store.setFilters({ searchQuery: '', category: 'ALL', status: 'ALL', healthness: 'ALL', location: 'ALL', sortBy: 'id_asc' });
+  };
+
+  const getHealthnessIndicator = (healthness) => {
+    const colors = {
+      green: '#10b981',
+      yellow: '#eab308',
+      red: '#ef4444'
+    };
+    const labels = {
+      green: 'Baik',
+      yellow: 'Perlu Perhatian',
+      red: 'Rusak'
+    };
+    const color = colors[healthness] || '#9ca3af';
+    const label = labels[healthness] || 'Tidak Diketahui';
+    return (
+      <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <span style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: color, display: 'inline-block', boxShadow: `0 0 6px ${color}` }}></span>
+        <span style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)' }}>{label}</span>
+      </span>
+    );
   };
 
   const handleQuickStatusToggle = async (asset) => {
@@ -87,6 +112,12 @@ export function AssetListPage({ onNavigate, onOpenDetail, onOpenDelete, showToas
                 <option value="Networking">Networking</option>
                 <option value="Monitor & Peripherals">Monitor & Peripherals</option>
               </select>
+              <select className="filter-select" value={filters.healthness || 'ALL'} onChange={handleHealthnessFilter}>
+                <option value="ALL">Semua Kesehatan</option>
+                <option value="green">🟢 Baik</option>
+                <option value="yellow">🟡 Perlu Perhatian</option>
+                <option value="red">🔴 Rusak</option>
+              </select>
             </div>
             <div className="table-toolbar-right">
               <select className="filter-select" value={filters.sortBy || 'id_asc'} onChange={handleSortChange}>
@@ -122,6 +153,7 @@ export function AssetListPage({ onNavigate, onOpenDetail, onOpenDelete, showToas
                   <th>Kategori</th>
                   <th>Stok</th>
                   <th>Kondisi</th>
+                  <th>Kesehatan</th>
                   <th>Lokasi</th>
                   <th style={{ textAlign: 'center', width: '130px' }}>Aksi</th>
                 </tr>
@@ -129,7 +161,7 @@ export function AssetListPage({ onNavigate, onOpenDetail, onOpenDelete, showToas
               <tbody>
                 {filteredAssets.length === 0 ? (
                   <tr>
-                    <td colSpan={7}>
+                    <td colSpan={8}>
                       <div className="empty-state">
                         <div className="empty-state-title">Tidak ada data ditemukan</div>
                         <div className="empty-state-desc">Coba ubah kata kunci pencarian atau reset filter.</div>
@@ -157,6 +189,7 @@ export function AssetListPage({ onNavigate, onOpenDetail, onOpenDelete, showToas
                           {asset.kondisi}
                         </div>
                       </td>
+                      <td>{getHealthnessIndicator(asset.healthness)}</td>
                       <td style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)' }}>{asset.lokasi}</td>
                       <td>
                         <div className="row-actions" style={{ justifyContent: 'center' }}>

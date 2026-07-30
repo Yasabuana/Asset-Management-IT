@@ -9,8 +9,13 @@ export function DashboardPage({ onNavigate, showToast }) {
   const maintenanceCount = assets.filter(a => a.kondisi === 'Used').length;
   const totalUnits = assets.reduce((sum, a) => sum + (a.quantity !== undefined ? a.quantity : 1), 0);
 
-  const recentLogs = logs.slice(0, 5);
+  // Healthness stats
+  const healthGreen = assets.filter(a => (a.healthness || 'green') === 'green').length;
+  const healthYellow = assets.filter(a => a.healthness === 'yellow').length;
+  const healthRed = assets.filter(a => a.healthness === 'red').length;
 
+  const recentLogs = logs.slice(0, 5);
+  
   return (
     <>
       {/* Page Header */}
@@ -53,6 +58,31 @@ export function DashboardPage({ onNavigate, showToast }) {
             <div className="stat-card-value">{totalUnits}</div>
             <div className="stat-card-sub">Keseluruhan stok fisik</div>
             <div className="stat-card-accent" style={{ backgroundColor: 'var(--color-text-primary)' }}></div>
+          </div>
+        </div>
+
+        {/* Healthness Overview */}
+        <div style={{ marginBottom: 'var(--space-6)' }}>
+          <h2 style={{ fontSize: 'var(--text-lg)', fontWeight: 700, marginBottom: 'var(--space-4)' }}>Kesehatan Aset</h2>
+          <div className="stats-grid">
+            <div className="stat-card" style={{ borderLeft: '4px solid #10b981' }}>
+              <div className="stat-card-label">🟢 Aset Baik</div>
+              <div className="stat-card-value" style={{ color: '#059669' }}>{healthGreen}</div>
+              <div className="stat-card-sub">Beroperasi normal tanpa kendala</div>
+              <div className="stat-card-accent" style={{ backgroundColor: '#10b981' }}></div>
+            </div>
+            <div className="stat-card" style={{ borderLeft: '4px solid #eab308' }}>
+              <div className="stat-card-label">🟡 Perlu Perhatian</div>
+              <div className="stat-card-value" style={{ color: '#ca8a04' }}>{healthYellow}</div>
+              <div className="stat-card-sub">Beroperasi dengan catatan</div>
+              <div className="stat-card-accent" style={{ backgroundColor: '#eab308' }}></div>
+            </div>
+            <div className="stat-card" style={{ borderLeft: '4px solid #ef4444' }}>
+              <div className="stat-card-label">🔴 Aset Rusak</div>
+              <div className="stat-card-value" style={{ color: '#dc2626' }}>{healthRed}</div>
+              <div className="stat-card-sub">Memerlukan perbaikan / penggantian</div>
+              <div className="stat-card-accent" style={{ backgroundColor: '#ef4444' }}></div>
+            </div>
           </div>
         </div>
 

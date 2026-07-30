@@ -19,6 +19,7 @@ class Store {
       searchQuery: '',
       category: 'ALL',
       status: 'ALL',
+      healthness: 'ALL',
       location: 'ALL',
       sortBy: 'id_asc'
     };
@@ -296,6 +297,29 @@ class Store {
     return false;
   }
 
+  async updateAssetHealthness(id, healthness) {
+    const asset = this.assetsState.find(a => String(a.id) === String(id));
+    if (asset) {
+      asset.healthness = healthness;
+      try {
+        await fetch(`${API_BASE_URL}/assets/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(asset)
+        });
+        await this.addHistoryLog('HEALTH_CHANGE', {
+          ...asset,
+          alasan: `Healthness diubah menjadi ${healthness}`
+        });
+        this.notify();
+        return true;
+      } catch(e) {
+        console.error(e);
+      }
+    }
+    return false;
+  }
+
   setFilters(newFilters) {
     this.filterState = { ...this.filterState, ...newFilters };
     this.notify();
@@ -321,6 +345,10 @@ class Store {
 
     if (this.filterState.status !== 'ALL') {
       result = result.filter(a => a.kondisi === this.filterState.status);
+    }
+
+    if (this.filterState.healthness !== 'ALL') {
+      result = result.filter(a => (a.healthness || 'green') === this.filterState.healthness);
     }
 
     if (this.filterState.location !== 'ALL') {
