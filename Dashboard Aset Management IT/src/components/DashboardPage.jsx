@@ -2,7 +2,7 @@ import React from 'react';
 import { useAssetStore } from '../state/useAssetStore.js';
 
 export function DashboardPage({ onNavigate, showToast }) {
-  const { assets, logs, formatIDR } = useAssetStore();
+  const { assets, logs, store, formatIDR } = useAssetStore();
 
   const totalAssets = assets.length;
   const activeCount = assets.filter(a => a.kondisi === 'New').length;
@@ -65,19 +65,19 @@ export function DashboardPage({ onNavigate, showToast }) {
         <div style={{ marginBottom: 'var(--space-6)' }}>
           <h2 style={{ fontSize: 'var(--text-lg)', fontWeight: 700, marginBottom: 'var(--space-4)' }}>Kesehatan Aset</h2>
           <div className="stats-grid">
-            <div className="stat-card" style={{ borderLeft: '4px solid #10b981' }}>
+            <div className="stat-card" style={{ borderLeft: '4px solid #10b981', cursor: 'pointer' }} onClick={() => { store.setFilters({ healthness: 'green' }); onNavigate('list'); }}>
               <div className="stat-card-label">🟢 Aset Baik</div>
               <div className="stat-card-value" style={{ color: '#059669' }}>{healthGreen}</div>
               <div className="stat-card-sub">Beroperasi normal tanpa kendala</div>
               <div className="stat-card-accent" style={{ backgroundColor: '#10b981' }}></div>
             </div>
-            <div className="stat-card" style={{ borderLeft: '4px solid #eab308' }}>
+            <div className="stat-card" style={{ borderLeft: '4px solid #eab308', cursor: 'pointer' }} onClick={() => { store.setFilters({ healthness: 'yellow' }); onNavigate('list'); }}>
               <div className="stat-card-label">🟡 Perlu Perhatian</div>
               <div className="stat-card-value" style={{ color: '#ca8a04' }}>{healthYellow}</div>
               <div className="stat-card-sub">Beroperasi dengan catatan</div>
               <div className="stat-card-accent" style={{ backgroundColor: '#eab308' }}></div>
             </div>
-            <div className="stat-card" style={{ borderLeft: '4px solid #ef4444' }}>
+            <div className="stat-card" style={{ borderLeft: '4px solid #ef4444', cursor: 'pointer' }} onClick={() => { store.setFilters({ healthness: 'red' }); onNavigate('list'); }}>
               <div className="stat-card-label">🔴 Aset Rusak</div>
               <div className="stat-card-value" style={{ color: '#dc2626' }}>{healthRed}</div>
               <div className="stat-card-sub">Memerlukan perbaikan / penggantian</div>

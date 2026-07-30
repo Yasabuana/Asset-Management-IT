@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAssetStore } from '../state/useAssetStore.js';
 import { exportToExcel } from '../utils/exportToExcel.js';
 
@@ -10,7 +10,14 @@ const SVG_CHECKOUT = <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" 
 export function AssetListPage({ onNavigate, onOpenDetail, onOpenDelete, showToast }) {
   const { filteredAssets, filters, store, formatIDR } = useAssetStore();
 
+  const [localSearch, setLocalSearch] = useState(filters.searchQuery || '');
+
+  useEffect(() => {
+    setLocalSearch(filters.searchQuery || '');
+  }, [filters.searchQuery]);
+
   const handleSearchChange = (e) => {
+    setLocalSearch(e.target.value);
     store.setFilters({ searchQuery: e.target.value });
   };
 
@@ -97,7 +104,7 @@ export function AssetListPage({ onNavigate, onOpenDetail, onOpenDelete, showToas
                 type="text"
                 className="search-input"
                 placeholder="Cari kode, nama, serial..."
-                value={filters.searchQuery || ''}
+                value={localSearch}
                 onChange={handleSearchChange}
               />
               <select className="filter-select" value={filters.status || 'ALL'} onChange={handleStatusFilter}>

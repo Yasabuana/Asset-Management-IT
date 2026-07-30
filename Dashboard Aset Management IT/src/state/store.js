@@ -331,11 +331,11 @@ class Store {
     if (this.filterState.searchQuery.trim() !== '') {
       const q = this.filterState.searchQuery.toLowerCase().trim();
       result = result.filter(a => 
-        (a.id || '').toLowerCase().includes(q) ||
-        (a.nama || '').toLowerCase().includes(q) ||
-        (a.serial_number || '').toLowerCase().includes(q) ||
-        (a.lokasi || '').toLowerCase().includes(q) ||
-        (a.kategori || '').toLowerCase().includes(q)
+        String(a.id || '').toLowerCase().includes(q) ||
+        String(a.nama || '').toLowerCase().includes(q) ||
+        String(a.serial_number || '').toLowerCase().includes(q) ||
+        String(a.lokasi || '').toLowerCase().includes(q) ||
+        String(a.kategori || '').toLowerCase().includes(q)
       );
     }
 
